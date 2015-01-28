@@ -2,9 +2,12 @@
 
 namespace InPay;
 
+define("INPAY_API_URL", "https://api.inpay.pl");
+define("INPAY_API_URL_TEST", "https://api.test-inpay.pl");
+
 class API_Client {
     private $availableCurrencies = array("PLN", "USD", "EUR", "CZK");
-    private $apiUrl = "https://api.test-inpay.pl";
+    private $apiUrl = INPAY_API_URL;
     private $apiKey = "";
     private $apiKeySecret = "";
     private $currency = "PLN";
@@ -36,12 +39,40 @@ class API_Client {
         return $this->requestPost("/invoice/status", $data);
     }
 
+    public function TestMode($enable) {
+        $this->apiUrl = (TRUE === $enable) ? INPAY_API_URL_TEST : INPAY_API_URL;
+    }
+
     public function setCurrency($name) {
         if(in_array($name, $this->availableCurrencies)) {
             $this->currency = $name;
         } else {
             throw new Exception("Currency unavailable");
         }
+    }
+
+    public function callback() {
+        $receivedCallback = isset($_POST['orderCode']) &&
+            isset($_POST['amount']) &&
+            isset($_POST['invoiceCode']) &&
+            isset($_POST['fee']) &&
+            isset($_POST['status']);
+
+        if(!$receivedCallback) {
+            return FALSE;
+        }
+
+        if(!$this->checkApiHash()) {
+            throw new Exception("singature hash doesn't match!");
+        }
+
+        return array(
+            'invoice_id' => $_POST['orderCode'],
+            'in' => $_POST['amount'],
+            'description' => 'Thank you! Transaction was successful!',
+            'fee' => $_POST['fee'],
+            'transaction_id' => $_POST['invoiceCode']
+        );
     }
 
     /*
