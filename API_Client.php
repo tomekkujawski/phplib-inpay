@@ -6,7 +6,7 @@ define("INPAY_API_URL", "https://api.inpay.pl");
 define("INPAY_API_URL_TEST", "https://api.test-inpay.pl");
 
 class API_Client {
-    private $availableCurrencies = array("PLN", "USD", "EUR", "CZK");
+    private $availableCurrencies = array("PLN", "USD", "EUR");
     private $apiUrl = INPAY_API_URL;
     private $apiKey = "";
     private $apiKeySecret = "";
@@ -97,6 +97,7 @@ class API_Client {
         $apiHash = $_SERVER['HTTP_API_HASH'];
         $query = http_build_query($_POST);
         $hash = hash_hmac("sha512", $query, $this->apiKeySecret);
-        return $apiHash == $hash;
+        // Timing attack safe string comparison
+        return hash_equals($apiHash, $hash);
     }
 } 
