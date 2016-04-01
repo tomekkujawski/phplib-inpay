@@ -1,7 +1,7 @@
 # phplib-inpay
 
 Full API documentation available at:
-https://inpay.pl/dokumentacja-api/
+https://github.com/inpay/api
 
 Example usage:
 
