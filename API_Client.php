@@ -20,7 +20,7 @@ class API_Client {
         }
     }
 
-    public function invoiceCreate($amount, $orderCode = "") {
+    public function invoiceCreate($amount, $orderCode = null) {
         $data = array(
             'apiKey' => $this->apiKey,
             'amount' => number_format(str_replace(",",".", $amount), 2),
@@ -47,7 +47,7 @@ class API_Client {
         if(in_array($name, $this->availableCurrencies)) {
             $this->currency = $name;
         } else {
-            throw new Exception("Currency unavailable");
+            throw new \Exception("Currency unavailable");
         }
     }
 
@@ -63,7 +63,7 @@ class API_Client {
         }
 
         if(!$this->checkApiHash()) {
-            throw new Exception("singature hash doesn't match!");
+            throw new \Exception("singature hash doesn't match!");
         }
 
         return array(
